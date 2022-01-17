@@ -1,6 +1,6 @@
 import time
 import requests
-import library.request as request
+import helpers.request as request
 import unittest
 
 my_request = request.Request(region_values=[123], page=1, url='http://127.0.0.1')

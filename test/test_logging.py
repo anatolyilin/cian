@@ -1,6 +1,6 @@
 import unittest
-from library.configuration import app_config
-from library.logging import get_logger
+from helpers.configuration import app_config
+from helpers.logging import get_logger
 
 
 class TestLoggingHandler(unittest.TestCase):

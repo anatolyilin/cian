@@ -2,7 +2,7 @@ import unittest
 import tempfile
 import os
 
-from library.configuration import app_config
+from helpers.configuration import app_config
 
 
 class TestConfig(unittest.TestCase):

@@ -6,8 +6,8 @@ import requests
 import tempfile
 import os
 from pathlib import Path
-from library.configuration import app_config
-import library.request as cian
+from helpers.configuration import app_config
+import helpers.request as cian
 
 
 class TestRequest(unittest.TestCase):

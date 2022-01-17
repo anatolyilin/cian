@@ -3,10 +3,10 @@ import tempfile
 import os
 import pickle
 import deepdiff
-import library.logging as logging
+import helpers.logging as logging
 
-from library.configuration import app_config
-import library.datahandling as dh
+from helpers.configuration import app_config
+import helpers.datahandling as dh
 
 logger = logging.get_logger()
 
@@ -253,7 +253,7 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(expected, dh.extract_image_information_from_offer(offer, exclude))
 
     def test_actual_photo(self):
-        from library.request import _get
+        from helpers.request import _get
         url = "https://i.imgur.com/ExdKOOz.png"
         response = _get(url, headers={})
         data = {1227: response.content}

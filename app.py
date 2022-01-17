@@ -2,11 +2,11 @@ import pickle
 import time
 from random import randrange
 
-from library.configuration import app_config
-import library.mongodb as mongodb
-import library.request as cian
-import library.logging as logging
-import library.datahandling as dh
+from helpers.configuration import app_config
+import helpers.mongodb as mongodb
+import helpers.request as cian
+import helpers.logging as logging
+import helpers.datahandling as dh
 
 config_path = "config.yaml"
 logger = logging.get_logger()
