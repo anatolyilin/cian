@@ -1,0 +1,24 @@
+app:
+  name: Cian
+  env: test
+
+logging:
+  level: DEBUG
+  format: "[%(asctime)s] %(levelname)s %(module)s: %(message)s"
+
+database:
+  username: testuser
+  password: testpwd
+  host: 127.0.0.1
+  port: 27017
+  db: testDB
+  collection: testCollection
+
+request:
+  url: http://127.0.0.1
+  user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15
+  cookie: my-super-secret-cookie-1234
+
+locations:
+  meta_file: ../data/metadata/metadata.pickle
+  offers_file: ../data/raw/offers.pickle

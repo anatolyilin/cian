@@ -1,0 +1,6 @@
+responses
+requests
+pymongo
+pandas
+pyyaml
+Pillow
