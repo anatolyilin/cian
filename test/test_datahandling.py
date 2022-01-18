@@ -13,10 +13,55 @@ logger = logging.get_logger()
 
 class TestRequest(unittest.TestCase):
 
+    def test_load_data(self):
+        data = {'foo': 'bar'}
+        fd, path = tempfile.mkstemp()
+        try:
+            with open(path, 'wb') as f:
+                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+            loaded_data = dh.load_data(path)
+        finally:
+            os.remove(path)
+
+        self.assertEqual(loaded_data, data)
+
+        fd, path = tempfile.mkstemp()
+        try:
+            loaded_data = dh.load_data(path)
+        finally:
+            os.remove(path)
+
+        self.assertEqual(loaded_data, {})
+
+    def test_store_data(self):
+        data = {'foo': 'bar'}
+        fd, path = tempfile.mkstemp()
+        try:
+            dh.persist_data(data, path)
+            with open(path, 'rb') as r:
+                data_modified = pickle.load(r)
+        finally:
+            os.remove(path)
+        self.assertEqual(data, data_modified)
+
+        data = {'foo': 'foobarfoo'}
+        data_og = {'foo': 1234}
+        fd, path = tempfile.mkstemp()
+        try:
+            with open(path, 'wb') as f:
+                pickle.dump(data_og, f, pickle.HIGHEST_PROTOCOL)
+            dh.persist_data(data, path)
+            with open(path, 'rb') as r:
+                data_modified = pickle.load(r)
+        finally:
+            os.remove(path)
+        self.assertEqual(data, data_modified)
+        self.assertNotEqual(data_og, data_modified)
+
     def test_file_paths(self):
         fd, path = tempfile.mkstemp()
         try:
-            self.assertFalse(dh.file_exists(path), "Should fail, proposed file is empty")
+            self.assertFalse(dh.exists(path), "Should fail, proposed file is empty")
             with os.fdopen(fd, "w") as tmp:
                 tmp.write("""
                             key: value
@@ -24,11 +69,11 @@ class TestRequest(unittest.TestCase):
                                 bar: "foo"
                             """)
 
-            self.assertTrue(dh.file_exists(path), "False negative")
+            self.assertTrue(dh.exists(path), "False negative")
         finally:
             os.remove(path)
 
-        self.assertFalse(dh.file_exists("non_existing_file.txt"), "False positive")
+        self.assertFalse(dh.exists("non_existing_file.txt"), "False positive")
 
     def test_metadata_new_file(self):
         with open("test/data/metadata.pickle", 'rb') as f:
@@ -218,37 +263,37 @@ class TestRequest(unittest.TestCase):
 
         exclude = [1211755686, 1211755906]
         expected = {1211755740: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
-                            '-1211755740-1.jpg',
-                1211755738:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755738-1.jpg',
-                1211755735: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
-                            '-1211755735-1.jpg', 1211755737:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755737-1.jpg'
-                    '', 1211755744: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755744-1.jpg', 1211755689:
-                    'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt-1211755689-1.jpg'
-                    '', 1211755687: 'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755687-1.jpg', 1211755736:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755736-1.jpg'
-                    '', 1211755904: 'https://cdn-p.cian.site/images/95/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755904-1.jpg', 1211755745:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755745-1.jpg'
-                    '', 1211755690: 'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755690-1.jpg', 1211755810:
-                    'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt-1211755810-1.jpg'
-                    '', 1211755905: 'https://cdn-p.cian.site/images/95/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755905-1.jpg', 1211755688:
-                    'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt-1211755688-1.jpg'
-                    '', 1211755741:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755741-1.jpg'
-                    '', 1211755809: 'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755809-1.jpg', 1211755742:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755742-1.jpg'
-                    '', 1211755811: 'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt'
-                                    '-1211755811-1.jpg', 1211755739:
-                    'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755739-1.jpg'
-                    '', 1211755813:
-                    'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt-1211755813-1.jpg'}
+                                '-1211755740-1.jpg',
+                    1211755738:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755738-1.jpg',
+                    1211755735: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                '-1211755735-1.jpg', 1211755737:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755737-1.jpg'
+                        '', 1211755744: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755744-1.jpg', 1211755689:
+                        'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt-1211755689-1.jpg'
+                        '', 1211755687: 'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755687-1.jpg', 1211755736:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755736-1.jpg'
+                        '', 1211755904: 'https://cdn-p.cian.site/images/95/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755904-1.jpg', 1211755745:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755745-1.jpg'
+                        '', 1211755690: 'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755690-1.jpg', 1211755810:
+                        'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt-1211755810-1.jpg'
+                        '', 1211755905: 'https://cdn-p.cian.site/images/95/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755905-1.jpg', 1211755688:
+                        'https://cdn-p.cian.site/images/65/571/121/kvartira-sochi-kurortnyy-prospekt-1211755688-1.jpg'
+                        '', 1211755741:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755741-1.jpg'
+                        '', 1211755809: 'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755809-1.jpg', 1211755742:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755742-1.jpg'
+                        '', 1211755811: 'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt'
+                                        '-1211755811-1.jpg', 1211755739:
+                        'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt-1211755739-1.jpg'
+                        '', 1211755813:
+                        'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt-1211755813-1.jpg'}
 
         self.assertEqual(expected, dh.extract_image_information_from_offer(offer, exclude))
 
