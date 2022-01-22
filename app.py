@@ -76,13 +76,18 @@ def iterate(regions: list, data_handler: DataHandler):
         logger.warning(f"Pulling and processing the data from the Cian's first offers page failed due to {e}")
         return
 
-    sleep.images()
+    sleep.offer_queries()
 
     try:
-        for i in range(2, 100):
+        for i in range(7, 100):
             logger.info(f'\n---------------------------------------------------------\n '
                         f' --------------------- PULLING PAGE {i} ---------------------'
                         f' \n---------------------------------------------------------\n ')
+
+            with open("lastpage.txt", "w") as f:
+                f.write(str(i))
+            f.close()
+
             cian_response = cian_query.get_next_offer_page()
             process_request(cian_response, data_handler)
             sleep.offer_queries()
@@ -109,4 +114,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    # python -m unittest
     main()

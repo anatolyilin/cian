@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, mock
 from helpers.mongohandler import MongoHandler
 from helpers.diffhandler import _process_diff
 import helpers.mongodb as database
@@ -14,15 +14,11 @@ class TestMongoHandler(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         cls._handler = MongoHandler()
         cls.collectionName = 'testCollection'
         cls.collection = database.getCollection(cls.collectionName)
         cls.collection.delete_many({})
-
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.collection.delete_many({})
 
     def test_exists(self):
         self.assertTrue(self._handler.exists('testCollection'))
@@ -39,7 +35,7 @@ class TestMongoHandler(TestCase):
         self.assertFalse(self._handler._id_exists_in(99, self.collectionName))
 
     def test_store_metadata(self):
-        with open("data/metadata.pickle", 'rb') as f:
+        with open("test/data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         collection = self.collection
@@ -160,13 +156,13 @@ class TestMongoHandler(TestCase):
 
         collection.delete_many({})
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         self._handler.store_offers(data, search_request_id, self.collectionName)
         data_modified = list(collection.find({}))
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             reloaded_data = pickle.load(f)
 
         self.assertEqual(len(reloaded_data), len(list(data_modified)))
@@ -311,11 +307,11 @@ class TestMongoHandler(TestCase):
     def test_removal_types_from_diff(self):
         # diff library adds sees changes 'null -> 1234' as a type change and not a value change.
         # Secondly, the types are printed in python way, including ' which brakes the document
-        with open('data/diff.pickle', 'rb') as f:
+        with open('test/data/diff.pickle', 'rb') as f:
             data = pickle.load(f)
 
         diff = data.get('previous_diff')[0]
-        with open('data/diff.pickle', 'rb') as f:
+        with open('test/data/diff.pickle', 'rb') as f:
             diff_og = pickle.load(f).get('previous_diff')[0]
 
         diff = _process_diff(diff)

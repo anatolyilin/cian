@@ -5,3 +5,5 @@ pymongo
 pandas
 pyyaml
 Pillow
+tqdm
+coverage

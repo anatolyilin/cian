@@ -7,6 +7,10 @@ from helpers.configuration import app_config
 
 class TestConfig(unittest.TestCase):
 
+    def test_an_empty_load(self):
+        self.assertEqual({}, app_config.load('doesnotexists.yaml'))
+        self.assertEqual({}, app_config.load(path=None))
+
     def test_config(self):
         fd, path = tempfile.mkstemp()
         try:
@@ -15,6 +19,8 @@ class TestConfig(unittest.TestCase):
                     property: true
                     nested:
                         item: "foo"
+                    other:
+                        something: [1,2,3]
                     """)
 
             app_config.load(path)
@@ -23,6 +29,8 @@ class TestConfig(unittest.TestCase):
 
             value = app_config.get_nested("nested.item")
             self.assertEqual(value, "foo", "Nested config item not found.")
+
+            self.assertEqual([1, 2, 3], app_config.get_nested("other.something"))
         finally:
             os.remove(path)
 

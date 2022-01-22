@@ -16,7 +16,7 @@ class MongoHandler(IPersistence):
             return path in list(database.getConnection().list_collection_names())
         except Exception as e:
             logger.debug(f"DB collection existence check failed for {path}. Assuming the collection does not exist. ")
-        return False
+            raise
 
     def _get_ids(self, location: str) -> list:
         cursor = database.getCollection(location)

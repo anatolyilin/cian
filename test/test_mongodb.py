@@ -11,7 +11,7 @@ from unittest.mock import patch
 class TestMongoDBConnection(unittest.TestCase):
 
     def test_connection_string(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         expected_connection_string = "mongodb://testuser:testpwd@127.0.0.1:27017/testDB"
         self.assertEqual(mng._get_connection_string(), expected_connection_string)
 
@@ -28,17 +28,17 @@ class TestMongoDBConnection(unittest.TestCase):
             mng._connect()
 
     def test_changing_collection(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         self.assertEqual(mng.getCollection('testMetadata').name, 'testMetadata')
         self.assertEqual(mng.getCollection('nonExistingCollection').name, 'nonExistingCollection')
         self.assertNotEqual(mng.getCollection('nonExistingCollection').name, 'testMetadata')
 
     def test_write_read(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         records = mng.getCollection('testMetadata')
         records.delete_many({})
 
-        with open("data/metadata.pickle", 'rb') as f:
+        with open("test/data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         records.insert_one(data)

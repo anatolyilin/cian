@@ -4,7 +4,7 @@ import helpers.logging as logging
 logger = logging.get_logger()
 
 
-def _process_type_changes(diff)-> dict:
+def _process_type_changes(diff: dict) -> dict:
     """
     Removes the type changes key and refactor the changes to the value changes field.
     :param diff: deepdiff dict
@@ -12,6 +12,7 @@ def _process_type_changes(diff)-> dict:
     """
     type_changed = diff.get('type_changes', {})
 
+    removal_keys = []
     for key in type_changed:
         type_changed[key].pop('old_type', None)
         type_changed[key].pop('new_type', None)
@@ -24,7 +25,10 @@ def _process_type_changes(diff)-> dict:
                         diff.get('values_changed').get(key).get('old_value') != type_changed.get(key).get('old_value'):
                     logger.error(f"Diff library error. It should not be possible to have value and type change for "
                                  f"the same key. Type changes, modified {type_changed}. modified Diff {diff}")
-                    type_changed.pop(key)
+                    removal_keys.append(key)
+
+    for key in removal_keys:
+        type_changed.pop(key)
 
     diff.pop('type_changes', None)
     if diff.get('values_changed', None) is None:
