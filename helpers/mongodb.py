@@ -25,19 +25,26 @@ def _connect():
     except errors.ConnectionFailure as err:
         logger.warning(f"Unable to connect to the database, no reason to proceed with the execution. {err}")
         raise
-    return conn
+    return conn['testDB']
+
+
+def getConnection():
+    global _connection
+    if _connection is None:
+        _connection = _connect()
+    return _connection
 
 
 # maybe connection and not the reference to the collection should be made global
-def getConnection(collection=app_config.get_nested("database.collection")):
+def getCollection(collection=app_config.get_nested("database.collection")):
     logger.debug("Attempting to retrieve MongoDB connection")
     if collection is None:
         logger.warning("No collection has been selected to work with, aborting.")
         raise errors.ConnectionFailure("Collection not provided")
     global _connection
     if _connection is None:
-        _connection = _connect().get_database(collection)
-    return _connection
+        _connection = _connect()
+    return _connection.get_collection(collection)
 
 
-__all__ = ['getConnection']
+__all__ = ['getCollection']

@@ -20,5 +20,17 @@ request:
   cookie: my-super-secret-cookie-1234
 
 locations:
-  meta_file: ../data/metadata/metadata.pickle
-  offers_file: ../data/raw/offers.pickle
+  meta_file: data/metadata/metadata.pickle
+  meta_collection: cian_request_metadata
+  offers_file: data/raw/offers.pickle
+  offers_collection: cian_offers
+  images_file: data/img/offers_images.pickle
+  images_collection: cian_offers_images
+
+cooloff:
+  image:
+    min: 1
+    max: 6
+  offer_query:
+    min: 30
+    max: 300

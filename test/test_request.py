@@ -70,7 +70,7 @@ class TestRequest(unittest.TestCase):
                          "Geneated cian query does not look right")
 
     def test_request_class(self):
-        app_config.load("test/test_config.yaml")
+        app_config.load("test_config.yaml")
         cian_request = cian.RequestOffers([1227])
         self.assertIsNotNone(cian_request.url)
         self.assertIsNotNone(cian_request.user_agent)
@@ -118,6 +118,29 @@ class TestRequest(unittest.TestCase):
         finally:
             os.remove(path)
 
+
+    @responses.activate
+    def test_get_image_fun(self):
+        with self.assertRaises(Exception):
+            cian.get_image({'foo': 'bar', 123: 'foobar'})
+
+        mock_response = b"blablablablablablabla"
+        responses.add(responses.GET, 'http://127.0.0.1',
+                      body=mock_response, status=200)
+
+        data = {123: 'http://127.0.0.1'}
+        modified_data = cian.get_image(data)
+        self.assertEqual(data, modified_data)
+
+        mock_response = None
+        responses.add(responses.GET, 'http://127.0.0.2',
+                      body=mock_response, status=500)
+
+        data = {123: 'http://127.0.0.2'}
+        modified_data = cian.get_image(data)
+        # if picture could not be downloaded, it should keep url in place
+        self.assertEqual(data, modified_data)
+
     @responses.activate
     def test_get_images_fun(self):
         mock_response = b"blablablablablablabla"
@@ -159,7 +182,7 @@ class TestRequest(unittest.TestCase):
 
     @responses.activate
     def test_execute_next(self):
-        app_config.load("test/test_config.yaml")
+        app_config.load("test_config.yaml")
         cian_request = cian.RequestOffers([1227])
 
         self.assertEqual(cian_request.page, 1)

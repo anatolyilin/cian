@@ -101,6 +101,21 @@ def _get(url, headers):
     return response
 
 
+def get_image(image: dict) -> dict:
+    if len(list(image.keys())) > 1:
+        logger.warning(f"Function is meant to download one single image. Aborting ")
+        raise AttributeError(f'get_image is valid for single image download, with one single k-v pair, key = image_id '
+                             f'and value = url. But got {image} instead')
+    image_id = list(image.keys())[0]
+    logger.debug(f"Attempting to pull image {image_id} ")
+    header = create_cian_image_header()
+    try:
+        image[image_id] = _get(image.get(image_id), header).content
+    except Exception as e:
+        logger.warning(f"Failed to pull image {image_id} - {image.get(image_id)}, due to {e}")
+    return image
+
+
 # expecting images_url as a dict with k = image_id and v = URL
 def get_images(images, delay=5, delay_max=None) -> dict:
     logger.info(f"Attempting to pull {len(list(images.keys()))} images")

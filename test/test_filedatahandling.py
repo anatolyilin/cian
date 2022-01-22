@@ -4,84 +4,26 @@ import os
 import pickle
 import deepdiff
 import helpers.logging as logging
-
-from helpers.configuration import app_config
-import helpers.datahandling as dh
+from helpers.filehander import FileHandler
+from helpers.datahandling import DataHandler
 
 logger = logging.get_logger()
 
 
-class TestRequest(unittest.TestCase):
+class TestFileDataHandling(unittest.TestCase):
 
-    def test_load_data(self):
-        data = {'foo': 'bar'}
-        fd, path = tempfile.mkstemp()
-        try:
-            with open(path, 'wb') as f:
-                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-            loaded_data = dh.load_data(path)
-        finally:
-            os.remove(path)
-
-        self.assertEqual(loaded_data, data)
-
-        fd, path = tempfile.mkstemp()
-        try:
-            loaded_data = dh.load_data(path)
-        finally:
-            os.remove(path)
-
-        self.assertEqual(loaded_data, {})
-
-    def test_store_data(self):
-        data = {'foo': 'bar'}
-        fd, path = tempfile.mkstemp()
-        try:
-            dh.persist_data(data, path)
-            with open(path, 'rb') as r:
-                data_modified = pickle.load(r)
-        finally:
-            os.remove(path)
-        self.assertEqual(data, data_modified)
-
-        data = {'foo': 'foobarfoo'}
-        data_og = {'foo': 1234}
-        fd, path = tempfile.mkstemp()
-        try:
-            with open(path, 'wb') as f:
-                pickle.dump(data_og, f, pickle.HIGHEST_PROTOCOL)
-            dh.persist_data(data, path)
-            with open(path, 'rb') as r:
-                data_modified = pickle.load(r)
-        finally:
-            os.remove(path)
-        self.assertEqual(data, data_modified)
-        self.assertNotEqual(data_og, data_modified)
-
-    def test_file_paths(self):
-        fd, path = tempfile.mkstemp()
-        try:
-            self.assertFalse(dh.exists(path), "Should fail, proposed file is empty")
-            with os.fdopen(fd, "w") as tmp:
-                tmp.write("""
-                            key: value
-                            some:
-                                bar: "foo"
-                            """)
-
-            self.assertTrue(dh.exists(path), "False negative")
-        finally:
-            os.remove(path)
-
-        self.assertFalse(dh.exists("non_existing_file.txt"), "False positive")
-
+    @classmethod
+    def setUpClass(self):
+        self.fh = FileHandler()
+        self.dh = DataHandler(self.fh)
+    
     def test_metadata_new_file(self):
-        with open("test/data/metadata.pickle", 'rb') as f:
+        with open("data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         fd, path = tempfile.mkstemp()
         try:
-            dh.store_metadata(data, path)
+            self.dh.store_metadata(data, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -91,7 +33,7 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(data, data_modified.get(data.get('searchRequestId')))
 
     def test_metadata_append(self):
-        with open("test/data/metadata.pickle", 'rb') as f:
+        with open("data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         historic_metadata = {"123-ad": {'a': 21, 'b': 34, 'bar': 'foo'}}
@@ -101,7 +43,7 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(historic_metadata, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            dh.store_metadata(data, path)
+            self.dh.store_metadata(data, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -114,12 +56,12 @@ class TestRequest(unittest.TestCase):
     def test_offers_new_file(self):
         search_request_id = "4acb3624-67c4-4c3c-bcc8-5cc81dcd11d6"
 
-        with open("test/data/offers.pickle", 'rb') as f:
+        with open("data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         fd, path = tempfile.mkstemp()
         try:
-            dh.store_offers(data, search_request_id, path)
+            self.dh.store_offers(data, search_request_id, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -127,13 +69,16 @@ class TestRequest(unittest.TestCase):
 
         self.assertEqual(len(data), len(list(data_modified.keys())))
 
+        with open("data/offers.pickle", 'rb') as f:
+            data = pickle.load(f)
+
         for original_offer in data:
             id = original_offer.get('cianId')
             processed_offer = data_modified.get(id)
 
             difference = deepdiff.DeepDiff(original_offer, processed_offer,
-                                           exclude_paths=["root['searchRequestId']", "root['previous_searchRequestId]",
-                                                          "root['previous_diff]"])
+                                           exclude_paths=["root['searchRequestId']", "root['previous_searchRequestId']",
+                                                          "root['previous_diff']"])
 
             self.assertEqual(search_request_id, processed_offer['searchRequestId'])
             self.assertEqual([], processed_offer['previous_searchRequestId'], "New data, should not have previous "
@@ -146,7 +91,7 @@ class TestRequest(unittest.TestCase):
     def test_offers_existing_file_append_only(self):
         search_request_id = "4acb3624-67c4-4c3c-bcc8-5cc81dcd11d6"
 
-        with open("test/data/offers.pickle", 'rb') as f:
+        with open("data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         historic_offers = {123: {'searchRequestId': "123-adf", "previous_searchRequestId": [], "previous_diff": [],
@@ -157,7 +102,7 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(historic_offers, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            dh.store_offers(data, search_request_id, path)
+            self.dh.store_offers(data, search_request_id, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -166,13 +111,16 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(data_modified.get(123), historic_offers.get(123))
         self.assertEqual(len(data) + 1, len(list(data_modified.keys())))
 
+        with open("data/offers.pickle", 'rb') as f:
+            data = pickle.load(f)
+
         for original_offer in data:
             id = original_offer.get('cianId')
             processed_offer = data_modified.get(id)
 
             difference = deepdiff.DeepDiff(original_offer, processed_offer,
                                            exclude_paths=["root['searchRequestId']", "root['previous_searchRequestId']",
-                                                          "root['previous_diff]"])
+                                                          "root['previous_diff']"])
 
             self.assertEqual(search_request_id, processed_offer['searchRequestId'])
             self.assertEqual([], processed_offer['previous_searchRequestId'], "New data, should not have previous "
@@ -194,7 +142,7 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(historic_offers, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            dh.store_offers(data.copy(), search_request_id, path)
+            self.dh.store_offers(data.copy(), search_request_id, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -225,7 +173,7 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(historic_offers, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            dh.store_offers(data, search_request_id, path)
+            self.dh.store_offers(data, search_request_id, path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -247,11 +195,11 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(data_modified, expected)
 
     def test_extract_image_information_from_offer(self):
-        with open("test/data/offers.pickle", 'rb') as f:
+        with open("data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         offer = data[:1][0]
-        images = dh.extract_image_information_from_offer(offer)
+        images = self.dh.extract_image_information_from_offer(offer)
         images_field = offer.get('photos')
         self.assertEqual(len(offer.get('photos')), len(list(images.keys())))
 
@@ -259,7 +207,7 @@ class TestRequest(unittest.TestCase):
             self.assertEqual(el.get('fullUrl'), images.get(el.get('id')))
 
         malformed_data = {'foo': 'bar'}
-        self.assertEqual({}, dh.extract_image_information_from_offer(malformed_data))
+        self.assertEqual({}, self.dh.extract_image_information_from_offer(malformed_data))
 
         exclude = [1211755686, 1211755906]
         expected = {1211755740: 'https://cdn-p.cian.site/images/75/571/121/kvartira-sochi-kurortnyy-prospekt'
@@ -295,7 +243,7 @@ class TestRequest(unittest.TestCase):
                         '', 1211755813:
                         'https://cdn-p.cian.site/images/85/571/121/kvartira-sochi-kurortnyy-prospekt-1211755813-1.jpg'}
 
-        self.assertEqual(expected, dh.extract_image_information_from_offer(offer, exclude))
+        self.assertEqual(expected, self.dh.extract_image_information_from_offer(offer, exclude))
 
     def test_actual_photo(self):
         from helpers.request import _get
@@ -305,7 +253,7 @@ class TestRequest(unittest.TestCase):
 
         fd, path = tempfile.mkstemp()
         try:
-            dh.store_images(data, path)
+            self.dh.store_images(images=data, location=path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -331,7 +279,7 @@ class TestRequest(unittest.TestCase):
 
         fd, path = tempfile.mkstemp()
         try:
-            dh.store_images(data, path)
+            self.dh.store_images(images=data, location=path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -382,7 +330,7 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            dh.store_images(to_be_added, path)
+            self.dh.store_images(images=to_be_added, location=path)
             with open(path, 'rb') as r:
                 data_modified = pickle.load(r)
         finally:
@@ -404,13 +352,13 @@ class TestRequest(unittest.TestCase):
             with open(path, 'wb') as f:
                 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
             f.close()
-            image_ids = dh.get_known_image_ids(path)
+            image_ids = self.dh.get_known_image_ids(path)
         finally:
             os.remove(path)
 
         self.assertEqual(image_ids, list(data.keys()))
 
-        image_ids = dh.get_known_image_ids('do_not_exist.pickle')
+        image_ids = self.dh.get_known_image_ids('do_not_exist.pickle')
         self.assertEqual([], image_ids)
 
 

@@ -4,7 +4,8 @@ from pandas import DataFrame
 
 def get_database():
     # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb://testuser:testpwd@localhost/testDB"
+    CONNECTION_STRING = "mongodb://testuser:testpwd@127.0.0.1:27017/testDB"
+    # CONNECTION_STRING = "mongodb://testuser:testpwd@localhost/testDB"
 
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     from pymongo import MongoClient
@@ -15,15 +16,16 @@ def get_database():
 
 
 dbname = get_database()
-collection_name = dbname["testCollection"]
+collection_name = dbname["cian_offers"]
 
-item_details = collection_name.find()
+# item_details = collection_name.update_many({}, {'$unset': {'previous_dff': []}})
+# item_details = collection_name.update_many({}, {'$set': {'previous_diff': []}})
 # for item in item_details:
 #     # This does not give a very readable output
 #     print(item)
 
-# convert the dictionary objects to dataframe
-items_df = DataFrame(item_details)
-
-# see the magic
-print(items_df)
+# # convert the dictionary objects to dataframe
+# items_df = DataFrame(item_details)
+#
+# # see the magic
+# print(items_df)
