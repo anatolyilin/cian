@@ -18,7 +18,7 @@ class TestFileDataHandling(unittest.TestCase):
         self.dh = DataHandler(self.fh)
     
     def test_metadata_new_file(self):
-        with open("data/metadata.pickle", 'rb') as f:
+        with open("test/data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         fd, path = tempfile.mkstemp()
@@ -33,7 +33,7 @@ class TestFileDataHandling(unittest.TestCase):
         self.assertEqual(data, data_modified.get(data.get('searchRequestId')))
 
     def test_metadata_append(self):
-        with open("data/metadata.pickle", 'rb') as f:
+        with open("test/data/metadata.pickle", 'rb') as f:
             data = pickle.load(f)
 
         historic_metadata = {"123-ad": {'a': 21, 'b': 34, 'bar': 'foo'}}
@@ -56,7 +56,7 @@ class TestFileDataHandling(unittest.TestCase):
     def test_offers_new_file(self):
         search_request_id = "4acb3624-67c4-4c3c-bcc8-5cc81dcd11d6"
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         fd, path = tempfile.mkstemp()
@@ -69,7 +69,7 @@ class TestFileDataHandling(unittest.TestCase):
 
         self.assertEqual(len(data), len(list(data_modified.keys())))
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         for original_offer in data:
@@ -91,7 +91,7 @@ class TestFileDataHandling(unittest.TestCase):
     def test_offers_existing_file_append_only(self):
         search_request_id = "4acb3624-67c4-4c3c-bcc8-5cc81dcd11d6"
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         historic_offers = {123: {'searchRequestId': "123-adf", "previous_searchRequestId": [], "previous_diff": [],
@@ -111,7 +111,7 @@ class TestFileDataHandling(unittest.TestCase):
         self.assertEqual(data_modified.get(123), historic_offers.get(123))
         self.assertEqual(len(data) + 1, len(list(data_modified.keys())))
 
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         for original_offer in data:
@@ -195,7 +195,7 @@ class TestFileDataHandling(unittest.TestCase):
         self.assertEqual(data_modified, expected)
 
     def test_extract_image_information_from_offer(self):
-        with open("data/offers.pickle", 'rb') as f:
+        with open("test/data/offers.pickle", 'rb') as f:
             data = pickle.load(f)
 
         offer = data[:1][0]

@@ -77,12 +77,13 @@ def _post(url, headers, query):
                                  data=json.dumps(query).replace(" ", ""))
         # check if it is 200 OK, if not, fail the execution, there is no need to proceed
         response.raise_for_status()
+        return response
     except requests.exceptions.HTTPError as err:
         logger.warning(f"Curl POST failed, unable pull data due to {err}")
         raise
     except requests.exceptions.RequestException as e:
         logger.warning(f"Curl POST failed, unable pull data due to {e}")
-    return response
+        raise
 
 
 def _get(url, headers):
@@ -93,12 +94,13 @@ def _get(url, headers):
         response = requests.get(url, headers=headers)
         # check if it is 200 OK, if not, fail the execution, there is no need to proceed
         response.raise_for_status()
+        return response
     except requests.exceptions.HTTPError as err:
         logger.warning(f"Curl GET failed, unable pull data due to {err}")
         raise
     except requests.exceptions.RequestException as e:
         logger.warning(f"Curl GET failed, unable pull data due to {e}")
-    return response
+        raise
 
 
 def get_image(image: dict) -> dict:

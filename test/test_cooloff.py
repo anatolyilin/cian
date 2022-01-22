@@ -8,7 +8,7 @@ import time
 class TestCoolOff(TestCase):
 
     def test_defaults(self):
-        app_config.load('test_config.yaml')
+        app_config.load('test/test_config.yaml')
         cooloff = CoolOff()
         settings = cooloff.stats()
         expected_settings = {'images_min': 1,

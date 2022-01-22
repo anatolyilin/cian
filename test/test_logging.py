@@ -6,7 +6,7 @@ from helpers.logging import get_logger
 class TestLoggingHandler(unittest.TestCase):
 
     def test_get_logger(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         logger = get_logger()
         logger.info("test log")
 

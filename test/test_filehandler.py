@@ -12,6 +12,26 @@ fh = filehandler.FileHandler()
 
 class TestFileHandler(unittest.TestCase):
 
+    def test_exceptions(self):
+        with self.assertRaises(Exception):
+            filehandler.load_data('doesntexist.txt')
+
+        with self.assertRaises(Exception):
+            filehandler.persist_data({}, 'doesntexist.txt')
+
+        with self.assertRaises(Exception):
+            filehandler.store_metadata({}, 'doesntexist.txt')
+
+        with self.assertRaises(Exception):
+            filehandler.get_known_image_ids('doesntexist.txt')
+
+        with self.assertRaises(Exception):
+            filehandler.store_images(images={}, location='doesntexist.txt')
+
+        with self.assertRaises(Exception):
+            filehandler.store_offers(new_offers={}, search_request_id="123", location='doesntexist.txt')
+
+
     def test_load_data(self):
         data = {'foo': 'bar'}
         fd, path = tempfile.mkstemp()

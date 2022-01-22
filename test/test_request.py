@@ -12,6 +12,26 @@ import helpers.request as cian
 
 class TestRequest(unittest.TestCase):
 
+    def test_exception(self):
+        with self.assertRaises(requests.exceptions.RequestException):
+            cian._post(url=None, headers={}, query={})
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            cian._post(url='https://google.com', headers={}, query={})
+
+        with self.assertRaises(requests.exceptions.RequestException):
+            cian._get(url=None, headers={})
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            cian._get(url='https://google.com/giuegeruerhgdfsjkghdfkjghuisehrge', headers={})
+
+    def test_init(self):
+        app_config.load("test/test_config.yaml")
+        offers = cian.RequestOffers([123], page=1, house_type='flatsale', user_agent=None, url=None, cookie=None)
+        self.assertEqual(offers.url, 'http://127.0.0.1')
+        self.assertEqual(offers.user_agent, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15')
+        self.assertEqual(offers.cookie, 'my-super-secret-cookie-1234' )
+
     def test_cian_offers_header(self):
         cookie = "my_secret_cookie"
         expected_header = {
@@ -69,8 +89,16 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(expected, cian.create_cian_query(page, house_type, region_value),
                          "Geneated cian query does not look right")
 
+    def test_cian_query_default(self):
+        region_value = [4998]
+        house_type = "my_house"
+        page = 24
+
+        self.assertEqual(cian.create_cian_query(page, house_type), cian.create_cian_query(page, house_type, region_value),
+                         "Geneated cian query does not look right")
+
     def test_request_class(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         cian_request = cian.RequestOffers([1227])
         self.assertIsNotNone(cian_request.url)
         self.assertIsNotNone(cian_request.user_agent)
@@ -161,6 +189,22 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(data, modified_data)
 
     @responses.activate
+    def test_get_images_sleep(self):
+        mock_response = b"blablablablablablabla"
+        responses.add(responses.GET, 'http://127.0.0.1',
+                      body=mock_response, status=200)
+
+        data = {123: 'http://127.0.0.1'}
+        expected_sleep = 2
+        start = time.time()
+        modified_data = cian.get_images(data, delay=expected_sleep)
+        end = time.time()
+        duration = round(end - start)
+
+        self.assertEqual(data, modified_data)
+        self.assertEqual(expected_sleep, duration)
+
+    @responses.activate
     def test_execute(self):
         mock_response = {'status': 'OK'}
         responses.add(responses.POST, 'http://127.0.0.1',
@@ -182,7 +226,7 @@ class TestRequest(unittest.TestCase):
 
     @responses.activate
     def test_execute_next(self):
-        app_config.load("test_config.yaml")
+        app_config.load("test/test_config.yaml")
         cian_request = cian.RequestOffers([1227])
 
         self.assertEqual(cian_request.page, 1)
