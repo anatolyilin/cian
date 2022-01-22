@@ -16,7 +16,8 @@ class TestCoolOff(TestCase):
                              'images_avg': 3.5,
                              'offers_query_avg': 165.0,
                              'offers_query_min': 30,
-                             'offers_query_max': 300}
+                             'offers_query_max': 300,
+                             'progress_bar': True}
         self.assertEqual(settings, expected_settings)
 
     def test_images(self):
