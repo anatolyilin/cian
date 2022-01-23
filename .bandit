@@ -1,0 +1,3 @@
+[bandit]
+include: helpers
+targets: helpers,app.py

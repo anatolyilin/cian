@@ -1,4 +1,4 @@
-import pickle
+import pickle # nosec
 import time
 
 from helpers.configuration import app_config
@@ -65,7 +65,6 @@ def process_request(cian_response, data_handler):
             pickle.dump(cian_response, f, pickle.HIGHEST_PROTOCOL)
 
 
-
 def iterate(regions: list, data_handler: DataHandler):
     try:
         logger.info("Attempting to pull the first page")
@@ -79,7 +78,7 @@ def iterate(regions: list, data_handler: DataHandler):
     sleep.offer_queries()
 
     try:
-        for i in range(7, 100):
+        for i in range(140, 1000):
             logger.info(f'\n---------------------------------------------------------\n '
                         f' --------------------- PULLING PAGE {i} ---------------------'
                         f' \n---------------------------------------------------------\n ')

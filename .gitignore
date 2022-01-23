@@ -54,6 +54,8 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+coverage_html_report
+bandit_baseline.json
 .cache
 nosetests.xml
 coverage.xml

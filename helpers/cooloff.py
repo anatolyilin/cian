@@ -25,7 +25,7 @@ def _sleep(min_seconds: int, max_seconds: int = None, animate: bool = True):
     :return: delay between min_seconds and max_seconds, or min_seconds if max_seconds is not provided
     """
     if max_seconds:
-        sleep_time = randrange(min_seconds, max_seconds)
+        sleep_time = randrange(min_seconds, max_seconds) # nosec
     else:
         sleep_time = min_seconds
     logger.info(f'sleeping for {sleep_time} seconds')

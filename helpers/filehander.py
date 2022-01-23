@@ -1,4 +1,4 @@
-import pickle
+import pickle # nosec
 import os
 import uuid
 import deepdiff
@@ -26,7 +26,7 @@ class FileHandler(IPersistence):
     def load_data(self, path):
         try:
             if self.exists(path):
-                with open(path, 'rb') as r:
+                with open(path, 'rb') as r: # nosec
                     data = pickle.load(r)
                 return data
         except Exception as e:
@@ -35,7 +35,7 @@ class FileHandler(IPersistence):
 
     def persist_data(self, data, path):
         try:
-            with open(path, 'wb') as f:
+            with open(path, 'wb') as f: # nosec
                 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             logger.warning(f"Failed to write file to {path} due to {e}")

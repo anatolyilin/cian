@@ -56,6 +56,136 @@ curl 'https://cdn-p.cian.site/images/51/866/811/kvartira-centralnyy-gorkogo-pere
 -H 'Connection: keep-alive'
 '''
 
+'''
+for sale with 3 rooms
+
+{
+    "jsonQuery": {
+        "region": {
+            "type": "terms",
+            "value": [
+                4998
+            ]
+        },
+        "_type": "flatsale",
+        "engine_version": {
+            "type": "term",
+            "value": 2
+        },
+        "room": {
+            "type": "terms",
+            "value": [
+                3
+            ]
+        },
+        "page": {
+            "type": "term",
+            "value": 7
+        }
+    }
+}
+'''
+
+
+'''
+rent 
+{
+    "jsonQuery": {
+        "for_day": {
+            "type": "term",
+            "value": "!1"
+        },
+        "_type": "flatrent",
+        "region": {
+            "type": "terms",
+            "value": [
+                4998
+            ]
+        },
+        "engine_version": {
+            "type": "term",
+            "value": 2
+        },
+        "page": {
+            "type": "term",
+            "value": 13
+        }
+    }
+}
+'''
+
+'''
+garage
+{
+    "jsonQuery": {
+        "region": {
+            "type": "terms",
+            "value": [
+                4998
+            ]
+        },
+        "_type": "commercialsale",
+        "office_type": {
+            "type": "terms",
+            "value": [
+                6
+            ]
+        },
+        "engine_version": {
+            "type": "term",
+            "value": 2
+        },
+        "page": {
+            "type": "term",
+            "value": 2
+        }
+    }
+}
+
+'''
+
+
+
+'''
+suburbansale or suburbanrent
+1 - dom
+2 - part of a house
+3 - uchastok
+4 - townhouse
+
+for sale. house, etc
+
+{
+    "jsonQuery": {
+        "region": {
+            "type": "terms",
+            "value": [
+                4998
+            ]
+        },
+        "_type": "suburbansale",
+        "object_type": {
+            "type": "terms",
+            "value": [
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        "engine_version": {
+            "type": "term",
+            "value": 2
+        },
+        "page": {
+            "type": "term",
+            "value": 6
+        }
+    }
+}
+
+'''
+
 
 def create_cian_query(page=1, house_type='flatsale', region_values=None) -> dict:
     if region_values is None:
@@ -129,7 +259,7 @@ def get_images(images, delay=5, delay_max=None) -> dict:
         try:
             images[image_id] = _get(images.get(image_id), header).content
             if delay_max:
-                sleep_time = randrange(delay, delay_max)
+                sleep_time = randrange(delay, delay_max) # nosec
                 logger.info(f'Cool off for {sleep_time} seconds to pull the next image')
                 time.sleep(sleep_time)
             else:
