@@ -281,14 +281,7 @@ class RequestOffers:
             user_agent = app_config.get_nested("request.user_agent")
         if cookie is None:
             config_cookie = app_config.get_nested("request.cookie")
-            cookie = "__cf_bm=FJNkZGoCnf7lThcjfcHfZCr4OQubYnlsTPqa5N0c0vs-1642011676-0" \
-                     "-AXCoNmkGx2fdE8Z82HyJzMESR3t95PWwzeIwc5nC4SHlLZvHDzQxyjJeSxkYhxBOpZJzHzqmpp9DHzLO8VOkdJ0=; " \
-                     "sopr_session=6adb14a2ea074e9a; " \
-                     "sopr_utm=%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D; adb=1; " \
-                     "session_main_town_region_id=1; session_region_id=1; serp_registration_trigger_popup=1; " \
-                     "login_mro_popup=1; cf_chl_2=; cf_chl_prog=; " \
-                     "cf_clearance=nUcXT3YhWeU3aQDaiaAw65tgUF.cKat.H9On0LJqb7s-1641404051-0-150; " \
-                     "first_visit_time=1641295059125; _CIAN_GK=d056b7e5-2131-4b97-acb1-5d1f0e0b9a92"
+            cookie = "sopr_session=c33468a79fd64a4f; sopr_utm=%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D; adb=1; session_main_town_region_id=4998; session_region_id=4998; __cf_bm=wD1OPA82fn5tjMMRmL9MoD57JHdIcFOpM1AdGs2qdrE-1643047048-0-AToZaouKe8Ii/GogcFIMLY4AOr+0Cy2JUXFqymnpOuspgki2k2zuEcbuRqcEL91sJIm/KuDIjFrCAXBKG41T0MA=; first_visit_time=1642952142637; login_mro_popup=1; seen_pins_compressed=BwdgjArGB0BMzADQgJwBYIDZokwBgMILAFpRJZoFYjCxl0I9otYzwIRo0VYGMuYMKhSixKdmADMU6Cjx9UUGCFpFS5ELNhhgavPVQ80cXpNzRMmNPzSUIaYOZSn+Ul8CmZJn7mEy2wDhomEA; hide_onboarding=1; countCallNowPopupShowed=0%3A1642879468985; serp_registration_trigger_popup=1; cf_clearance=nUcXT3YhWeU3aQDaiaAw65tgUF.cKat.H9On0LJqb7s-1641404051-0-150; _CIAN_GK=d056b7e5-2131-4b97-acb1-5d1f0e0b9a92'"
             if config_cookie is not None:
                 cookie = config_cookie
 

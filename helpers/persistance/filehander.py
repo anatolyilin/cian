@@ -3,7 +3,7 @@ import os
 import uuid
 import deepdiff
 
-from helpers.IPersistence import IPersistence
+from helpers.persistance.IPersistence import IPersistence
 
 from pathlib import Path
 import helpers.logging as logging

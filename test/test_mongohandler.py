@@ -1,11 +1,9 @@
-from unittest import TestCase, mock
-from helpers.mongohandler import MongoHandler
+from unittest import TestCase
+from helpers.persistance.mongohandler import MongoHandler
 from helpers.diffhandler import _process_diff
-import helpers.mongodb as database
+import helpers.persistance.mongodb as database
 import pickle
 import deepdiff
-import io
-from PIL import Image
 import helpers.request as cian
 from helpers.configuration import app_config
 

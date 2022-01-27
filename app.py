@@ -2,12 +2,12 @@ import pickle # nosec
 import time
 
 from helpers.configuration import app_config
-from helpers.mongohandler import MongoHandler
-from helpers.filehander import FileHandler
+from helpers.persistance.mongohandler import MongoHandler
+from helpers.persistance.filehander import FileHandler
 from helpers.cooloff import CoolOff
 import helpers.request as cian
 import helpers.logging as logging
-from helpers.datahandling import DataHandler
+from helpers.persistance.datahandling import DataHandler
 
 config_path = "config.yaml"
 logger = logging.get_logger()
@@ -63,6 +63,7 @@ def process_request(cian_response, data_handler):
         logger.warning(f"response did not contain any data to work with and threw {e}")
         with open(f'data/failed/failed_{str(time.time())}.pickle', 'wb') as f:
             pickle.dump(cian_response, f, pickle.HIGHEST_PROTOCOL)
+        raise
 
 
 def iterate(regions: list, data_handler: DataHandler):
@@ -78,7 +79,7 @@ def iterate(regions: list, data_handler: DataHandler):
     sleep.offer_queries()
 
     try:
-        for i in range(140, 1000):
+        for i in range(2, 1000):
             logger.info(f'\n---------------------------------------------------------\n '
                         f' --------------------- PULLING PAGE {i} ---------------------'
                         f' \n---------------------------------------------------------\n ')

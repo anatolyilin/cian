@@ -4,8 +4,8 @@ import os
 import pickle
 import deepdiff
 import helpers.logging as logging
-from helpers.filehander import FileHandler
-from helpers.datahandling import DataHandler
+from helpers.persistance.filehander import FileHandler
+from helpers.persistance.datahandling import DataHandler
 
 logger = logging.get_logger()
 

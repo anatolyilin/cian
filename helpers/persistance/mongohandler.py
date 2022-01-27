@@ -1,7 +1,7 @@
 import uuid
 
-import helpers.mongodb as database
-from helpers.IPersistence import IPersistence
+import helpers.persistance.mongodb as database
+from helpers.persistance.IPersistence import IPersistence
 from helpers.diffhandler import get_diff
 from helpers.configuration import app_config
 import helpers.logging as logging
